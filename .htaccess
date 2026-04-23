@@ -1,0 +1,30 @@
+# Amirhp Filer Bot — Apache Security Rules
+
+# Block direct access to PHP files except index.php and setup.php
+<FilesMatch "^(?!index|setup).*\.php$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Block access to sensitive directories
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Block access to logs/
+    RewriteRule ^logs/ - [F,L]
+
+    # Block access to tmp/
+    RewriteRule ^tmp/ - [F,L]
+
+    # Block access to sql/
+    RewriteRule ^sql/ - [F,L]
+</IfModule>
+
+# Disable directory listing
+Options -Indexes
+
+# Block access to config and other core files
+<FilesMatch "^(config|db|helpers|telegram|bot|messages)\.php$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>

@@ -1,0 +1,20 @@
+# Amirhp Filer Bot — gitignore
+
+# Config (NEVER commit this)
+config.php
+
+# Temp files
+tmp/
+*.tmp
+
+# Logs
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
