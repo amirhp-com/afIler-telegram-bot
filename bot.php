@@ -78,10 +78,15 @@ class Bot {
                 return;
             }
 
-            if (FileHelper::isGitHubRepoUrl($text)) {
-                $this->handleGitHubRepo($text);
-            } else {
-                $this->handleFileUrl($text);
+            try {
+                if (FileHelper::isGitHubRepoUrl($text)) {
+                    $this->handleGitHubRepo($text);
+                } else {
+                    $this->handleFileUrl($text);
+                }
+            } catch (Throwable $e) {
+                Logger::error('URL handler error: ' . $e->getMessage());
+                TG::send($this->chatId, Msg::get('error_generic'));
             }
             return;
         }
@@ -335,12 +340,14 @@ class Bot {
 
         if (!$this->canAccess()) return;
 
-        $data  = CB::decode($cb['data'] ?? '{}');
+        $data   = CB::decode($cb['data'] ?? '{}');
         $action = $data['a'] ?? '';
         $owner  = $data['o'] ?? '';
         $repo   = $data['r'] ?? '';
         $tag    = $data['t'] ?? '';
         $msgId  = $msg['message_id'];
+
+        try {
 
         switch ($action) {
 
@@ -395,8 +402,9 @@ class Bot {
                 }
                 $buttons = [];
                 foreach ($release['assets'] as $asset) {
-                    $size    = FileHelper::formatSize($asset['size']);
-                    $buttons[] = [['text' => "📎 {$asset['name']} ({$size})", 'callback_data' => CB::encode(['a' => 'gh_dl_asset', 'o' => $owner, 'r' => $repo, 't' => $tag, 'u' => $asset['browser_download_url']])]];
+                    $size = FileHelper::formatSize($asset['size']);
+                    $uk   = DB::storeUrl($asset['browser_download_url']);
+                    $buttons[] = [['text' => "📎 {$asset['name']} ({$size})", 'callback_data' => CB::encode(['a' => 'gh_dl_asset', 'k' => $uk])]];
                 }
                 $buttons[] = [['text' => '⬅️ Back', 'callback_data' => CB::encode(['a' => 'gh_tag_opt', 'o' => $owner, 'r' => $repo, 't' => $tag])]];
                 TG::edit($this->chatId, $msgId, Msg::get('github_release_assets', ['release' => $release['name']]), $buttons);
@@ -415,10 +423,12 @@ class Bot {
                 break;
 
             case 'gh_dl_asset':
-                $assetUrl = $data['u'] ?? '';
+                $assetUrl = DB::fetchUrl($data['k'] ?? '');
                 if ($assetUrl) {
                     TG::edit($this->chatId, $msgId, "⏬ Downloading asset...");
                     $this->handleFileUrl($assetUrl);
+                } else {
+                    TG::edit($this->chatId, $msgId, Msg::get('error_generic'));
                 }
                 break;
 
@@ -439,6 +449,11 @@ class Bot {
                     ],
                 ]);
                 break;
+        }
+
+        } catch (Throwable $e) {
+            Logger::error('Callback handler error: ' . $e->getMessage());
+            TG::send($this->chatId, Msg::get('error_generic'));
         }
     }
 

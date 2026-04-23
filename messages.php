@@ -19,8 +19,10 @@ return [
             . "━━━━━━━━━━━━━━━━━━━━\n"
             . "👨‍💻 Developed by <b>AmirhpCom</b>",
         'buttons' => [
-            [['text' => '👨‍💻 Developer', 'url' => 'https://amirhp.com/landing']],
-            [['text' => '⭐ GitHub',    'url' => 'https://github.com/amirhp-com']],
+            [
+                ['text' => '👨‍💻 Developer', 'url' => 'https://amirhp.com/landing'],
+                ['text' => '⭐ GitHub',    'url' => 'https://github.com/amirhp-com'],
+            ],
         ],
     ],
 

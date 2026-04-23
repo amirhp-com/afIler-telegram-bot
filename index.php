@@ -10,6 +10,9 @@
 
 declare(strict_types=1);
 
+ignore_user_abort(true);
+set_time_limit(600);
+
 // ── BOOTSTRAP ────────────────────────────────────────────────────────────────
 
 require_once __DIR__ . '/config.php';

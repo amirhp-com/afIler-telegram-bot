@@ -56,7 +56,7 @@ class TG {
             'parse_mode' => $parseMode,
         ];
         if (!empty($keyboard)) {
-            $params['reply_markup'] = json_encode(['inline_keyboard' => $keyboard]);
+            $params['reply_markup'] = ['inline_keyboard' => $keyboard];
         }
         return self::request('sendMessage', $params);
     }
@@ -69,9 +69,9 @@ class TG {
             'parse_mode' => $parseMode,
         ];
         if (!empty($keyboard)) {
-            $params['reply_markup'] = json_encode(['inline_keyboard' => $keyboard]);
+            $params['reply_markup'] = ['inline_keyboard' => $keyboard];
         } else {
-            $params['reply_markup'] = json_encode([]);
+            $params['reply_markup'] = ['inline_keyboard' => []];
         }
         return self::request('editMessageText', $params);
     }

@@ -162,4 +162,20 @@ class DB {
             [$key, $val]
         );
     }
+
+    // ── TEMP URL STORE (for asset URLs that exceed callback_data 64-byte limit) ─
+
+    public static function storeUrl(string $url): string {
+        $key = substr(md5($url . microtime()), 0, 8);
+        self::q(
+            'INSERT INTO ' . DB_PREFIX . 'settings (`key`, val) VALUES (?, ?) ON DUPLICATE KEY UPDATE val=VALUES(val)',
+            ['_u_' . $key, $url]
+        );
+        return $key;
+    }
+
+    public static function fetchUrl(string $key): ?string {
+        $val = self::val('SELECT val FROM ' . DB_PREFIX . 'settings WHERE `key` = ?', ['_u_' . $key]);
+        return $val ?: null;
+    }
 }
