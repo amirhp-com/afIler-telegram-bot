@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Amirhp Filer Bot — Telegram API
  * Developed by AmirhpCom
@@ -34,7 +35,10 @@ class TG {
         $err  = curl_error($ch);
         curl_close($ch);
 
-        if ($err) { Logger::error("cURL error [$method]: $err"); return null; }
+        if ($err) {
+            Logger::error("cURL error [$method]: $err");
+            return null;
+        }
         $data = json_decode($resp, true);
         if (!$data || !$data['ok']) {
             Logger::error("TG API error [$method]: " . ($data['description'] ?? $resp));
@@ -91,7 +95,10 @@ class TG {
             'chat_id'    => $chatId,
             'document'   => new CURLFile($filePath, mime_content_type($filePath) ?: 'application/octet-stream', $filename ?: basename($filePath)),
         ];
-        if ($caption) { $fields['caption'] = $caption; $fields['parse_mode'] = 'HTML'; }
+        if ($caption) {
+            $fields['caption'] = $caption;
+            $fields['parse_mode'] = 'HTML';
+        }
         return self::request('sendDocument', $fields, true);
     }
 
@@ -101,7 +108,10 @@ class TG {
             'video'      => new CURLFile($filePath, 'video/' . pathinfo($filePath, PATHINFO_EXTENSION), $filename ?: basename($filePath)),
             'supports_streaming' => 'true',
         ];
-        if ($caption) { $fields['caption'] = $caption; $fields['parse_mode'] = 'HTML'; }
+        if ($caption) {
+            $fields['caption'] = $caption;
+            $fields['parse_mode'] = 'HTML';
+        }
         return self::request('sendVideo', $fields, true);
     }
 
@@ -110,7 +120,10 @@ class TG {
             'chat_id'    => $chatId,
             'audio'      => new CURLFile($filePath, 'audio/' . pathinfo($filePath, PATHINFO_EXTENSION), $filename ?: basename($filePath)),
         ];
-        if ($caption) { $fields['caption'] = $caption; $fields['parse_mode'] = 'HTML'; }
+        if ($caption) {
+            $fields['caption'] = $caption;
+            $fields['parse_mode'] = 'HTML';
+        }
         return self::request('sendAudio', $fields, true);
     }
 
@@ -119,7 +132,10 @@ class TG {
             'chat_id' => $chatId,
             'photo'   => new CURLFile($filePath, mime_content_type($filePath) ?: 'image/jpeg', basename($filePath)),
         ];
-        if ($caption) { $fields['caption'] = $caption; $fields['parse_mode'] = 'HTML'; }
+        if ($caption) {
+            $fields['caption'] = $caption;
+            $fields['parse_mode'] = 'HTML';
+        }
         return self::request('sendPhoto', $fields, true);
     }
 
@@ -140,7 +156,10 @@ class TG {
         $method = $methodMap[$type] ?? 'sendDocument';
         $field  = $fieldMap[$type]  ?? 'document';
         $params = ['chat_id' => $chatId, $field => $fileId];
-        if ($caption) { $params['caption'] = $caption; $params['parse_mode'] = 'HTML'; }
+        if ($caption) {
+            $params['caption'] = $caption;
+            $params['parse_mode'] = 'HTML';
+        }
         return self::request($method, $params);
     }
 
@@ -149,6 +168,21 @@ class TG {
     public static function setWebhook(string $url, string $secret = ''): ?array {
         $params = ['url' => $url, 'allowed_updates' => ['message', 'callback_query']];
         if ($secret) $params['secret_token'] = $secret;
+
+        // DEBUG
+        $ch = curl_init(self::$base . 'setWebhook');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => json_encode($params),
+            CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+        ]);
+        $resp = curl_exec($ch);
+        $err  = curl_error($ch);
+        curl_close($ch);
+        echo '<pre>setWebhook raw: ' . ($err ?: $resp) . '</pre>';
+
         return self::request('setWebhook', $params);
     }
 

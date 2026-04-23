@@ -143,6 +143,15 @@ section('4. Webhook Registration');
 $webhookUrl = 'https://' . ($_SERVER['HTTP_HOST'] ?? 'yourdomain.com') . rtrim(dirname($_SERVER['REQUEST_URI']), '/') . '/index.php';
 info("Registering webhook: <code>$webhookUrl</code>");
 
+// Quick cURL test
+$ch = curl_init('https://api.telegram.org/bot' . BOT_TOKEN . '/getMe');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+$r = curl_exec($ch);
+$e = curl_error($ch);
+curl_close($ch);
+echo '<pre>cURL test: ' . ($e ?: $r) . '</pre>';
+
 $result = TG::setWebhook($webhookUrl, WEBHOOK_SECRET);
 if ($result) {
     ok("Webhook set successfully! ✅");
