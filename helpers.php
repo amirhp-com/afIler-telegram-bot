@@ -40,7 +40,7 @@ class Msg {
             $text = str_replace('{' . $k . '}', $v, $text);
         }
         $text = str_replace('{max_size}', self::maxSize(), $text);
-        $text = str_replace('{version}', BOT_VERSION, $text);
+        $text = str_replace('{version}', defined('BOT_VERSION') ? BOT_VERSION : '1.1.0', $text);
         return $text;
     }
 
