@@ -210,7 +210,9 @@ class GitHub {
     }
 
     public static function repoZipUrl(string $owner, string $repo): string {
-        return "https://github.com/$owner/$repo/archive/refs/heads/main.zip";
+        $info   = self::fetch("/repos/$owner/$repo");
+        $branch = $info['default_branch'] ?? 'main';
+        return "https://github.com/$owner/$repo/archive/refs/heads/{$branch}.zip";
     }
 }
 

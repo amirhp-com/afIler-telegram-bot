@@ -55,6 +55,22 @@ if (!$update || !is_array($update)) {
     exit;
 }
 
+// ── RESPOND TO TELEGRAM IMMEDIATELY ─────────────────────────────────────────
+// Send 200 OK before any processing so Telegram doesn't wait and retry.
+
+http_response_code(200);
+header('Content-Type: text/plain');
+header('Content-Length: 2');
+header('Connection: close');
+echo 'OK';
+
+if (function_exists('fastcgi_finish_request')) {
+    fastcgi_finish_request();
+} else {
+    ob_end_flush();
+    flush();
+}
+
 // ── HANDLE ───────────────────────────────────────────────────────────────────
 
 try {
@@ -63,6 +79,3 @@ try {
 } catch (Throwable $e) {
     Logger::error('Unhandled exception: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
 }
-
-http_response_code(200);
-echo 'OK';
