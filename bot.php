@@ -184,10 +184,40 @@ class Bot {
 
             case '/clearqueue':
                 if (!$this->isAdmin()) { TG::send($this->chatId, Msg::get('admin_only')); return; }
-                // Clean temp dir
                 $count = 0;
                 foreach (glob(TEMP_DIR . 'dl_*') as $f) { @unlink($f); $count++; }
                 TG::send($this->chatId, Msg::get('queue_cleared', ['count' => $count]));
+                break;
+
+            case '/webhookinfo':
+                if (!$this->isAdmin()) { TG::send($this->chatId, Msg::get('admin_only')); return; }
+                $info = TG::getWebhookInfo();
+                $allowed = implode(', ', $info['allowed_updates'] ?? ['(all)']);
+                $lastErr = htmlspecialchars($info['last_error_message'] ?? 'none');
+                $lastErrDate = $info['last_error_date'] ? date('Y-m-d H:i:s', $info['last_error_date']) : '-';
+                TG::send($this->chatId,
+                    "🔗 <b>Webhook Info</b>\n\n"
+                    . "URL: <code>" . htmlspecialchars($info['url'] ?? '') . "</code>\n"
+                    . "Pending updates: <b>" . ($info['pending_update_count'] ?? 0) . "</b>\n"
+                    . "Allowed updates: <b>{$allowed}</b>\n"
+                    . "Last error: <i>{$lastErr}</i>\n"
+                    . "Error date: <i>{$lastErrDate}</i>"
+                );
+                break;
+
+            case '/fixwebhook':
+                if (!$this->isAdmin()) { TG::send($this->chatId, Msg::get('admin_only')); return; }
+                $info = TG::getWebhookInfo();
+                $webhookUrl = $info['url'] ?? '';
+                if (!$webhookUrl) {
+                    TG::send($this->chatId, '❌ No webhook URL found. Run setup.php first.');
+                    return;
+                }
+                $result = TG::setWebhook($webhookUrl, WEBHOOK_SECRET);
+                TG::send($this->chatId, $result
+                    ? "✅ Webhook re-registered.\nURL: <code>" . htmlspecialchars($webhookUrl) . "</code>\nAllowed: message, callback_query"
+                    : '❌ Failed to re-register webhook.'
+                );
                 break;
 
             default:

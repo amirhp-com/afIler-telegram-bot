@@ -9,7 +9,7 @@ return [
 
     // ── WELCOME ──────────────────────────────────────────────────────────────
     'welcome' => [
-        'text' => "👋 <b>Welcome to Amirhp Filer Bot!</b>\n\n"
+        'text' => "👋 <b>Welcome to aFIler Bot!</b>  <code>v{version}</code>\n\n"
             . "I can:\n"
             . "📥 Download any direct file URL and send it to you\n"
             . "🎬 Send videos, 🖼 images, 🎵 audio as native Telegram media\n"
@@ -27,7 +27,7 @@ return [
     ],
 
     // ── HELP ─────────────────────────────────────────────────────────────────
-    'help' => "📖 <b>Amirhp Filer Bot — Help</b>\n\n"
+    'help' => "📖 <b>aFIler Bot — Help</b>  <code>v{version}</code>\n\n"
         . "<b>Commands:</b>\n"
         . "/start — Welcome message\n"
         . "/help — This help message\n"

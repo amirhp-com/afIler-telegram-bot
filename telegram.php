@@ -168,21 +168,6 @@ class TG {
     public static function setWebhook(string $url, string $secret = ''): ?array {
         $params = ['url' => $url, 'allowed_updates' => ['message', 'callback_query']];
         if ($secret) $params['secret_token'] = $secret;
-
-        // DEBUG
-        $ch = curl_init(self::$base . 'setWebhook');
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 30,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode($params),
-            CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-        ]);
-        $resp = curl_exec($ch);
-        $err  = curl_error($ch);
-        curl_close($ch);
-        echo '<pre>setWebhook raw: ' . ($err ?: $resp) . '</pre>';
-
         return self::request('setWebhook', $params);
     }
 

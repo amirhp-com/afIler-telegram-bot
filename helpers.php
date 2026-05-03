@@ -39,8 +39,8 @@ class Msg {
         foreach ($vars as $k => $v) {
             $text = str_replace('{' . $k . '}', $v, $text);
         }
-        // Replace {max_size} globally
         $text = str_replace('{max_size}', self::maxSize(), $text);
+        $text = str_replace('{version}', BOT_VERSION, $text);
         return $text;
     }
 
