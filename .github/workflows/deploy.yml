@@ -1,0 +1,28 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload via SFTP
+        run: |
+          sudo apt-get install -y lftp -qq
+          lftp -c "
+            set sftp:connect-program 'ssh -o StrictHostKeyChecking=no -o ConnectTimeout=15';
+            open sftp://amirhp:ZsFD76vFrC5ZIzNTS@ftp.amirhp.com:1980;
+            mirror -R --parallel=4 --ignore-time \
+              --exclude '^\.git/' \
+              --exclude '^\.github/' \
+              --exclude '^\.vscode/' \
+              --exclude '^\.DS_Store$' \
+              --exclude '^jsconfig\.json$' \
+              --exclude '^README\.md$' \
+              . /home/amirhp/_blackswanx.com/filerbot/;
+            bye
+          "
